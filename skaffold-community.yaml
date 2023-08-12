@@ -1,0 +1,38 @@
+# skaffold.yaml
+apiVersion: skaffold/v2beta1
+kind: Config
+build:
+  artifacts:
+    - image: airflow
+      context: ./
+      sync:
+        manual:
+          - src: "dags/**/*.py"
+            dest: dags
+            strip: dags/
+  local:
+    useDockerCLI: true
+deploy:
+  helm:
+    releases:
+      - name: airflow
+        namespace: airflow
+        chartPath: helm/airflow-stable
+        valuesFiles:
+          - "./helm/airflow-stable/values.yaml"
+          - "./helm/airflow-stable/values.local.yaml"
+        skipBuildDependencies: true
+        values:
+          airflow.airflow.image: airflow
+        setValueTemplates:
+          airflow.dags.persistence.enabled: false
+          airflow.logs.persistence.enabled: false
+          airflow.airflow.config.AIRFLOW__KUBERNETES__DAGS_IN_IMAGE: "True"
+          airflow.airflow.config.GUNICORN_CMD_ARGS: "--log-level DEBUG"
+        imageStrategy:
+          helm: {}
+portForward:
+  - resourceType: service
+    resourceName: airflow-web
+    port: 8080
+    localPort: 8080

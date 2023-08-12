@@ -1,0 +1,20 @@
+airflow:
+  airflow:
+    executor: KubernetesExecutor
+  workers:
+    enabled: false
+  flower:
+    enabled: false
+  redis:
+    enabled: false
+  logs:
+    persistence:
+      enabled: false
+  scheduler:
+    logCleanup:
+      enabled: false
+web:
+  webserverConfig:
+    stringOverride: |
+      from airflow.www.fab_security.manager import AUTH_DB
+      AUTH_TYPE = AUTH_DB

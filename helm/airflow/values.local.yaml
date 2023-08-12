@@ -1,0 +1,15 @@
+
+# Airflow webserver secret key
+# https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#webserver-secret-key
+webserverSecretKeySecretName: airflow-webserver-secret
+
+# Fernet key settings
+# Note: fernetKey can only be set during install, not upgrade
+# https://airflow.apache.org/docs/apache-airflow/stable/security/secrets/fernet.html
+fernetKeySecretName: airflow-fernet-secret
+
+gitSync:
+  enabled: false
+
+config:
+  AIRFLOW__KUBERNETES__DAGS_IN_IMAGE: True"

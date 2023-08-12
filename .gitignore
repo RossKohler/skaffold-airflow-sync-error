@@ -1,3 +1,9 @@
+## Mac files
+.DS_Store
+
+## Kind Files
+.kind-pv-data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
