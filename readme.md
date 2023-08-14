@@ -3,24 +3,11 @@
 2. Run `kind create cluster --config=kind-config.yaml`
 3. Run `kubectl create namespace airflow`
 4. Run `skaffold dev --port-forward`
-5. Observe the following error message repeatedly shown whenever changes are made to `.py` files in the `dags` folder:
+5. Observe the following error message repeatedly shown whenever changes are made to `.py` files in the `dags/test_folder` folder. Editing `.py` files directly in the `dags` folder, sync correctly:
 ```
-WARN[0192] sync failed for artifact "airflow:560e03907dcbd22f46c6fbbe4f5a5d2b38b8137edcbe8e964b98fa42bcff5d35"  subtask=-1 task=DevLoop
-WARN[0192] Skipping deploy due to sync error:copying files: didn't sync any files: sync failed for artifact "airflow:560e03907dcbd22f46c6fbbe4f5a5d2b38b8137edcbe8e964b98fa42bcff5d35"  subtask=-1 task=DevLoop
+WARN[0138] Skipping deploy due to sync error:copying files: running [kubectl --context kind-airflow-sync-error-cluster exec airflow-webserver-86649d6786-xkb6k --namespace airflow -c webserver -i -- tar xmf - -C / --no-same-owner]
+ - stdout: ""
+ - stderr: "tar: Removing leading `/' from member names\ntar: opt/airflow/dags/test_folder/test_dag_1.py: Cannot open: File exists\ntar: Exiting with failure status due to previous errors\ncommand terminated with exit code 2\n"
+ - cause: exit status 2: sync failed for artifact "airflow-skaffold:1e848fa7f2a293361600329f269d2829fe3ca8c58267195ead78bb8d50de216e"  subtask=-1 task=DevLoop
 Watching for changes...
 ```
-
-## Note ##
-Syncing works correctly when using the community chart found here https://github.com/airflow-helm/charts. See https://artifacthub.io/packages/helm/airflow-helm/airflow.
-
-I followed this article to get it working https://christoph-caprano.de/kubernetes-airflow-local-development-setup/. The same procedure doesn't work for the official Airflow helm chart for some reason.
-
-## Steps to Sync with Airflow Deployment (Deployed through Community Chart) ##
-
-1. Git clone repository
-2. Run `kind create cluster --config=kind-config.yaml`
-3. Run `kubectl create namespace airflow` 
-4. Run `helm install airflow helm/airflow-stable/ -f helm/airflow-stable/values.yaml --values helm/airflow-stable/values.local.yaml --namespace airflow` -> This step is added because when the pods initialy start up some of them error which makes Skaffold panic and immediately abort everything. Give it some time and the pods will stabilize.
-4. Run `skaffold dev -f skaffold-community.yaml --port-forward`
-
-Observe that the `xcom_args_are_awesome` DAG is now listed in the home page and any changes to the Python code is correctly sync to the deployment. This works as I would expect it to. If only I could get the same thing working with the official Airflow helm chart.
